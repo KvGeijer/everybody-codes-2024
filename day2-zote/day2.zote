@@ -1,0 +1,87 @@
+include!("stdlib");
+include!("../everybody-codes.zote");
+
+// Part 1
+input1 := read("input1.txt") >> trim >> split("\n\n");
+
+runes := input1[0] >> split(":") >> [1] >> split(',');
+
+fn count_matches(words, runes) -> {
+	matches := 0;
+	for word in words >> split(" ") 
+		for rune in runes 
+			for i in [0:len(word)-len(rune) + 1] 
+				if rune == word[i:i+len(rune)] matches += 1;
+	matches
+	
+}
+count_matches(input1[1], runes) >> print;
+
+
+// Part 2
+input2 := read("input2.txt") >> trim >> split("\n");
+runes := input2[0] >> split(":") >> [1] >> split(',');
+runes = [runes, runes >> map(rev)] >> concat >> set >> keys;
+
+fn count_matches(words, runes) -> {
+	matches := 0;
+	for word in words >> split(" ") {
+		inds := set();
+		for rune in runes 
+			for i in [0:len(word)-len(rune) + 1] 
+				if rune == word[i:i+len(rune)]
+					for ii in [i:i+len(rune)] ii >> insert(inds);
+		matches += inds >> len;
+		
+	}
+	matches
+	
+}
+
+tot := 0;
+for line in input2[1:] {
+	tot += line >> count_matches(runes);
+}
+tot >> print;
+
+
+// Part 3
+input3 := read("input3.txt") >> trim >> split("\n");
+runes := input3[0] >> split(":") >> [1] >> split(',');
+runes = [runes, runes >> map(rev)] >> concat >> set >> keys;
+
+fn ext_mat(mat) -> {
+	mat >> map(\line -> line ++ line)
+}
+mat := input3[1:];
+
+rot_mat := [];
+for coli in [0:len(mat[0])] {
+	col := [];
+	for row in mat {
+		push(row[coli], col);	
+	}
+	push(col >> join(""), rot_mat);
+}
+
+mat = mat >> ext_mat;
+
+inds := set();
+
+// Normal way
+for row in [0:len(mat)] for col in [0:len(mat[0])/2] for rune in runes {
+	word := mat[row][col:col+len(rune)];
+	if word == rune
+		for c in [col:col+len(rune)] 
+			[row, c % (len(mat[0])/2)] >> insert(inds)
+}
+
+// Rotated way
+for row in [0:len(rot_mat)] for col in [0:len(rot_mat[0])] for rune in runes {
+	word := rot_mat[row][col:col+len(rune)];
+	if word == rune
+		for c in [col:col+len(rune)] 
+			[c % len(mat), row] >> insert(inds)
+}
+
+inds >> len >> print;
