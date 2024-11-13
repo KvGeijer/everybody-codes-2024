@@ -53,3 +53,11 @@ fn concat(coll) -> {
 	res
 }
 
+/// Stores al chars string into a dict such that dict[[x, y]] = split(string, "\n")[x][y]
+fn parse_matrix_dict(string, dict) -> {
+	// TODO: For this to be useful, we need default_dict
+	for (row, line) in string >> split("\n") >> enumerate
+		for (col, char) in line >> enumerate
+			dict[[row, col]] = char;
+}
+
