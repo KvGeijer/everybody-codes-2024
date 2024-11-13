@@ -1,0 +1,32 @@
+include!("stdlib");
+include!("../everybody-codes.zote");
+
+// Part 1
+input1 := read("input1.txt") >> trim;
+
+counts := input1 >> count;
+counts["B"] + 3* counts["C"] >> print;
+
+// Part 2
+input2 := read("input2.txt") >> trim;
+
+if len(input2) % 2 != 0 print("Uneven length!");
+
+monsters := input2[::2] >> zip(input2[1::2]) >> filter(\>> neq(["x", "x"])) >> concat;
+counts = monsters >> count;
+
+counts["B"] + 3* counts["C"] + 5*counts["D"] + (len(monsters)/2 - counts["x"])*2 >> print;
+
+
+// Part 3
+input3 := read("input3.txt") >> trim;
+
+tot := 0;
+for i in [0:len(input3)/3] {
+	monsters := input3[3*i: 3*(i+1)] >> filter(\>> neq("x"));
+	counts = monsters >> count;
+
+	tot += get_or("B", counts, 0) + 3*get_or("C", counts, 0) + 5*get_or("D", counts, 0) + len(monsters)*(len(monsters) - 1);
+}
+print(tot);
+
