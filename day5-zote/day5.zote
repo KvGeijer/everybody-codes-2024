@@ -1,0 +1,119 @@
+include!("stdlib");
+include!("../everybody-codes.zote");
+
+
+fn score(cols) -> {
+    cols >> map(\>> [0] >> str) >> join("") >> int
+}
+
+fn dance(cols, col) -> {
+    clap := cols[col];
+    cols[col] = clap[1];
+
+    newcol := (col + 1) % len(cols);
+    rows := if newcol == 0 rows - 1 else rows;
+
+    cnum := clap[0] % (2*rows);
+    curr := cols[newcol];
+    if cnum == 1 {
+        clap[1] = curr;
+        cols[newcol] = clap;
+    }
+    else if cnum <= rows {
+        for _ in [0:cnum-2]{
+            curr = curr[1];
+        }
+        clap[1] = curr[1];
+        curr[1] = clap;
+    }
+    else {
+        fromback := cnum - rows;
+        cnum := rows - fromback;
+        
+        for _ in [0:cnum-2]{
+            curr = curr[1];
+        }
+        clap[1] = curr[1];
+        curr[1] = clap;
+    }
+}
+
+// Part 1
+input := read("input1.txt") >> trim;
+lines := input >> split("\n") >> map(ints);
+rows := len(lines);
+
+cols := lines[0] >> map(\>> const([nil]));
+
+for line in lines[::-1] {
+    for (i, int) in line >> enumerate {
+        cols[i] = [int, cols[i]];
+    }
+}
+
+for round in [0:10] {
+    dance(cols, round % len(cols));
+}
+
+score(cols) >> print;
+
+
+// Part 2
+input := read("input2.txt") >> trim;
+lines := input >> split("\n") >> map(ints);
+rows := len(lines);
+
+cols := lines[0] >> map(\>> const([nil]));
+
+for line in lines[::-1] {
+    for (i, int) in line >> enumerate {
+        cols[i] = [int, cols[i]];
+    }
+}
+
+// Very slow...
+round := 0;
+scores := dict();
+while true {
+    dance(cols, round % len(cols));
+    round += 1;
+    scores[score(cols)] = score(cols) >> get_or(scores, 0) >> add(1);
+    if scores[score(cols)] == 2024 break;
+}
+
+round * score(cols) >> print;
+
+
+// Part 3
+input := read("input3.txt") >> trim;
+lines := input >> split("\n") >> map(ints);
+rows := len(lines);
+
+cols := lines[0] >> map(\>> const([nil]));
+
+for line in lines[::-1] {
+    for (i, int) in line >> enumerate {
+        cols[i] = [int, cols[i]];
+    }
+}
+
+// Assume we find a cycle relatively quickly
+scores := set();
+for round in [0:1000000]  {
+    dance(cols, round % len(cols));
+    score(cols) >> insert(scores);
+}
+
+scores >> keys >> maximum >> print;
+
+
+// Assume all combinations work, which did not work.
+// cols := lines[0] >> map(\>> const([]));
+
+// for line in lines {
+//     for (i, int) in line >> enumerate {
+//         int >> push(cols[i]);
+//     }
+// }
+
+// cols >> concat >> sort >> [-4:] >> map(str) >> join("") >> int >> print; 
