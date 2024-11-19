@@ -1,0 +1,5 @@
+include!("stdlib");
+include!("../everybody-codes.zote");
+
+input := read("input1.txt") >> trim;
+lines := input >> split("\n");

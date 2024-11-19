@@ -1,0 +1,46 @@
+include!("stdlib");
+include!("../everybody-codes.zote");
+
+// We could do this much more effiently with a bfs-like thing, but it was not needed due to small inputs
+fn find_volume(input, neigh_func) -> {
+    d := parse_matrix_dict(input);
+
+    depths := dict();
+    for (ind, c) in d {
+        if c == '.' depths[ind] = 0
+        else if c == '#' depths[ind] = 1;
+    }
+
+    level := 1;
+    found := true;
+    while found {
+        found = false;
+        for (ind, depth) in depths if depth == level {
+            // Find the smallest closest depth
+            ok := true;  
+            for neigh in neigh_func(ind) {
+                if abs(get_or(neigh, depths, 0) - (depth + 1)) > 1 {
+                    ok = false;
+                    break;
+                }
+            }
+            if ok {
+                found = true;
+                depths[ind] = depth + 1;
+            }
+        }
+        level += 1;
+    }
+
+    depths >> values >> sum
+}
+
+// Part 1
+read("input1.txt") >> trim >> find_volume(neighs4) >> print;
+
+// Part 2
+read("input2.txt") >> trim >> find_volume(neighs4) >> print;
+
+// Part 3
+read("input3.txt") >> trim >> find_volume(neighs8) >> print;
+       
