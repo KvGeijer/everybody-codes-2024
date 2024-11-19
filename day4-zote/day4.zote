@@ -1,0 +1,14 @@
+include!("stdlib");
+include!("../everybody-codes.zote");
+
+input1 := read("input1.txt") >> trim >> ints;
+input1 >> map(\>> sub(minimum(input1))) >> sum >> print;
+
+input2 := read("input2.txt") >> trim >> ints;
+input2 >> map(\>> sub(minimum(input2))) >> sum >> print;
+
+input3 := read("input3.txt") >> trim >> ints;
+median := input3 >> sort >> [len(input3)/2];
+input3 >> map(\>> sub(median) >> abs) >> sum >> print;
+
+
