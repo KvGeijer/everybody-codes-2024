@@ -1,0 +1,43 @@
+include!("stdlib");
+include!("../everybody-codes.zote");
+
+input := read("input1.txt") >> trim;
+lines := input >> split("\n");
+
+branches := lines >> map(\line -> {(from, to) := split(line, ":"); [from, to >> split(',')]}) >> dict;
+
+dists := dict();
+// Traverses in dfs order and stores distances
+fn dfs(branch, hist, branches) -> {
+    hist = clone(hist); branch >> push(hist);
+    if branch == "@" dists[hist] = len(hist)
+    else if branch >> in(branches) for neigh in branches[branch] dfs(neigh, hist, branches);
+}
+
+dfs("RR", [], branches);
+counts := dists >> values >> count;
+for (key, value) in dists if counts[value] == 1 print(key >> join(""));
+
+// Part 2
+input := read("input2.txt") >> trim;
+lines := input >> split("\n");
+
+branches := lines >> map(\line -> {(from, to) := split(line, ":"); [from, to >> split(',')]}) >> dict;
+
+dists = dict();
+
+dfs("RR", [], branches);
+counts := dists >> values >> count;
+for (key, value) in dists if counts[value] == 1 print(key >> map(\>> [0]) >> join(""));
+
+// Part 3
+input := read("input3.txt") >> trim;
+lines := input >> split("\n");
+
+branches := lines >> map(\line -> {(from, to) := split(line, ":"); [from, to >> split(',')]}) >> filter(\>> [0] >> in(["ANT", "BUG"]) >> not) >> dict;
+
+dists = dict();
+
+dfs("RR", [], branches);
+counts := dists >> values >> count;
+for (key, value) in dists if counts[value] == 1 print(key >> map(\>> [0]) >> join(""));
