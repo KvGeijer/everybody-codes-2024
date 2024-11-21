@@ -1,0 +1,38 @@
+include!("stdlib");
+
+
+// This is a problem from LeetCode that Martin wanted to see if I could solve, so I did.
+input := [1, 2, 5, 3];
+
+fn min_by(items, cmp) -> {
+    min := items[0];
+    for item in items if cmp(item) < cmp(min) min = item;
+    min
+}
+
+fn next_permutation(arr) -> {
+    prev := arr[-1];
+    found := false;
+    for (ind, item) in arr[:-1] >> enumerate >> [::-1] {
+        if item < prev {
+            found = true;
+            new := clone(arr);
+            // Set the current ind to the smallest one that is larger than item
+            (repl_ind, repl_item) := enumerate(arr)[ind + 1:] >> filter(\>> [1] >> gt(item)) >> min_by(\>> [1]);
+            new[ind] = repl_item;
+            new[repl_ind] = item;
+            // Then sort the remaining ones in descending order
+            rest := sort(new[ind + 1:]);
+            for (offset, new_item) in rest >> enumerate {
+                new[ind + 1 + offset] = new_item;
+            }
+            return new;
+        } else {
+            prev = item;
+        }
+    }
+    if !found return sort(arr); // reset to ascending order
+}
+
+// Just validate to see that the algorithm works for this simple example
+for i in [1:100] input = input >> print >> next_permutation;
